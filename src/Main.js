@@ -12,7 +12,8 @@ import {
     FlatList,
     Alert,
     ActivityIndicator,
-    BackHandler
+    BackHandler,
+    RefreshControl
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Fab, Container, Content, Button, Header, Left, Body, Icon, Right } from 'native-base';
@@ -51,6 +52,7 @@ export default class Main extends Component {
         super(props);
         this.state = {
             isLoading: 0,
+            refreshing: false,
             quoteIdx: Math.floor(Math.random() * 5),
             currentLevel: { value: 1, idx: 0 },
             targetLevel: { value: 1, idx: 0 },
@@ -77,12 +79,12 @@ export default class Main extends Component {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       }).then((res) => {
-        this.setState({ isLoading: this.state.isLoading + 1 });
+        this.setState({ isLoading: this.state.isLoading + 1, refreshing: false });
         this.setState({
           highScores: res.data,
         });
       }).catch((err) => {
-        this.setState({ isLoading: this.state.isLoading + 1  });
+        this.setState({ isLoading: this.state.isLoading + 1, refreshing: false  });
         console.log(err);
         Alert.alert('Error', err.toString());
       });
@@ -162,14 +164,14 @@ export default class Main extends Component {
         element:
           <View style={styles.containerTopBarNav}>
             <Image source={require('../assets/images/stairs.png')} style={styles.imageTopBarNav}/>
-            <Text style={styles.titleTab}>Mobility</Text>
+            <Text style={styles.titleTab}>StepToo</Text>
           </View>,
         title: 'mobility',
       },
       {
         element:
           <View style={styles.containerTopBarNav}>
-            <Image source={require('../assets/images/mobility.png')} style={styles.imageTopBarNav}/>
+            <Image source={require('../assets/images/go.png')} style={styles.imageTopBarNav}/>
             <Text style={styles.titleTab}>GO</Text>
           </View>,
         title: 'go',
@@ -318,8 +320,8 @@ export default class Main extends Component {
       if (modeStart) {
         return (
           <View style={styles.calorieCounterContainer}>
-            <Text style={[styles.centeredTextBold, {fontSize: 20}]}>I started at floor #{floorStartQR}</Text>
-            <Image source={require('../assets/images/heartbeat.gif')} style={{marginHorizontal: 50, height: 200, resizeMode: 'stretch'}}/>
+            <Text style={[styles.centeredTextBold, {fontSize: 20}]}>You started at floor #{floorStartQR}</Text>
+            <Image source={require('../assets/images/heartbeat.gif')} style={{marginVertical: -30, marginHorizontal: 20, height: 200, resizeMode: 'stretch'}}/>
           </View>
         );
       }
@@ -327,17 +329,19 @@ export default class Main extends Component {
 
     renderGoTab = () => {
       return (
-        <View style={[styles.tabContentContainer, { justifyContent: 'center', alignItems: 'center'}]}>
-          <View style={styles.calorieCounterContainer}>
-            <Text style={[styles.centeredTextBold, {fontSize: 20}]}>Hi, {this.state.name}! </Text>
-            <Text style={[styles.centeredTextBold, {fontSize: 20, marginBottom: 10}]}>You have burned {this.state.calorieQR} Cal.</Text>
+        <ScrollView>
+          <View style={[styles.tabContentContainer, { justifyContent: 'flex-start', alignItems: 'center'}]}>
+            <View style={styles.calorieCounterContainer}>
+              <Text style={[styles.centeredTextBold, {fontSize: 20}]}>Hi, {this.state.name}! </Text>
+              <Text style={[styles.centeredTextBold, {fontSize: 20, marginBottom: 10}]}>You have burned {this.state.calorieQR} Cal.</Text>
+            </View>
+            { this.displayJourney() }
+            <TouchableOpacity style={styles.buttonScanQR} onPress={() => this.goToScanQR()}>
+              <Image source={require('../assets/images/qr_code.png')} style={styles.imageScanQR}/>
+              <Text style={[styles.centeredTextBold, { fontSize: 20 }]}>{ this.state.modeStart ? 'End Journey' : 'Start Journey'}</Text>
+            </TouchableOpacity>
           </View>
-          { this.displayJourney() }
-          <TouchableOpacity style={styles.buttonScanQR} onPress={() => this.goToScanQR()}>
-            <Image source={require('../assets/images/qr_code.png')} style={styles.imageScanQR}/>
-            <Text style={[styles.centeredTextBold, { fontSize: 20 }]}>{ this.state.modeStart ? 'End Journey' : 'Start Journey'}</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       );
     }
 
@@ -345,7 +349,7 @@ export default class Main extends Component {
       return (
         <>
           { item.name == this.state.name ?
-            <View style={[styles.profileGroup, {backgroundColor: 'yellow'}]}>
+            <View style={[styles.profileGroup, {backgroundColor: 'yellow', marginTop: 0}]}>
                 <Text style={styles.profileLable}>Username: {item.name}</Text>
                 <Text selectable style={[styles.profileText, {alignSelf: 'flex-end'}]}>Score: {item.score}</Text>
             </View>
@@ -359,14 +363,22 @@ export default class Main extends Component {
       )
     }
 
+    onRefresh = () => {
+      this.setState({ refreshing: true, loading: this.state.loading - 1 });
+      this.getHighScores();
+    }
+
     renderLeaderboardTab = () => {
 
       return (
         <FlatList
-        data={this.state.highScores}
-        renderItem={({ item }) => ( this.renderItemLeaderboard(item) )}
-        keyExtractor={item => makeID(5)}
-      />
+          data={this.state.highScores}
+          renderItem={({ item }) => ( this.renderItemLeaderboard(item) )}
+          keyExtractor={item => makeID(5)}
+          refreshControl={
+            <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh} />
+          }
+        />
       );
     }
 
@@ -402,7 +414,7 @@ export default class Main extends Component {
             <Container style={styles.container}>
             <Header
               transparent style={[styles.viewStyle, styles.headerStyledStyle]}
-              androidStatusBarColor={'#E4322F'}
+              androidStatusBarColor={'#4dad4a'}
               iosBarStyle={'dark-content'}
             >
               <Left style={{ flex: 1 }}>
@@ -591,7 +603,7 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     headerStyle: {
-  		backgroundColor: '#E4322F',
+  		backgroundColor: '#4dad4a',
   	},
     labelStyle: {
       fontFamily: 'Montserrat-Bold',
@@ -633,7 +645,7 @@ const styles = StyleSheet.create({
       textAlign: 'center'
     },
     headerStyledStyle: {
-  		backgroundColor: '#E4322F',
+  		backgroundColor: '#4dad4a',
   	},
     headerStyledText: {
       color: 'white',

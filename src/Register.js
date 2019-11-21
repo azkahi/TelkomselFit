@@ -103,7 +103,7 @@ export default class Register extends Component {
             { isLoading ? <ActivityIndicator size="large" color="#00ff00" /> : null }
             <Header
               transparent style={[styles.viewStyle, styles.headerStyledStyle]}
-              androidStatusBarColor={'#E4322F'}
+              androidStatusBarColor={'#4dad4a'}
               iosBarStyle={'dark-content'}
             >
               <Left style={{ flex: 1 }}>
@@ -130,7 +130,7 @@ export default class Register extends Component {
                 {
                     props => (
                         <View style={{ marginTop: 50, flex: 0, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{ width: 300 }}>
+                            <View style={styles.textInput}>
                                 <TextInput
                                     autoCapitalize="none"
                                     placeholder={'Username'}
@@ -142,7 +142,7 @@ export default class Register extends Component {
                                 />
                                 {props.errors.username && props.touched.username && <Text style={[styles.errorLabel]}>{props.errors.username}</Text>}
                             </View>
-                            <View style={{ width: 300 }}>
+                            <View style={styles.textInput}>
                                 <TextInput
                                     placeholder={'Password'}
                                     secureTextEntry
@@ -156,7 +156,7 @@ export default class Register extends Component {
                                 />
                                 {props.errors.password && props.touched.password && <Text style={[styles.errorLabel]}>{props.errors.password}</Text>}
                             </View>
-                            <View style={{ width: 300 }}>
+                            <View style={styles.textInput}>
                                 <TextInput
                                   autoCapitalize="none"
                                   placeholder={'MSISDN'}
@@ -171,7 +171,7 @@ export default class Register extends Component {
 
 
                             <Button success buttonStyle={styles.buttonSubmit} onPress={props.handleSubmit}>
-                              <Text style={[styles.textBasic, {alignSelf: 'center', color: 'white'}]}>Register</Text>
+                              <Text style={[styles.textBasic, {alignSelf: 'center', color: 'white', marginBottom: 20}]}>Register</Text>
                             </Button>
                         </View>
                     )
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
         // backgroundColor: '#dc1f1b',
         width: 300,
         height: 60,
-        borderRadius: 10,
+        borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -259,9 +259,16 @@ const styles = StyleSheet.create({
       fontFamily: 'Montserrat-Bold',
     },
     headerStyledStyle: {
-  		backgroundColor: '#E4322F',
+  		backgroundColor: '#4dad4a',
   	},
     headerStyledText: {
       color: 'white',
     },
+    textInput: {
+      width: 300,
+      borderWidth: 0.75,
+      borderRadius: 5,
+      marginBottom: 15,
+      paddingHorizontal: 5
+    }
 });

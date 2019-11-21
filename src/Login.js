@@ -91,9 +91,7 @@ export default class Login extends Component {
                 extraHeight={180}
             >
             <View style={styles.container}>
-                <Text style={[styles.textLabel, {marginTop: 60}]}>
-                    StepToo
-                </Text>
+                <Image source={require('../assets/images/logo_steptoo.png')} style={[styles.image, {marginTop: 60, resizeMode: 'center'}]}/>
                 <Formik
                 initialValues={{
                     username: '',
@@ -105,7 +103,7 @@ export default class Login extends Component {
                 {
                     props => (
                         <View style={{ marginTop: 50, flex: 0, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{ width: 300 }}>
+                            <View style={styles.textInput}>
                                 <TextInput
                                     autoCapitalize="none"
                                     placeholder={'Username'}
@@ -117,7 +115,7 @@ export default class Login extends Component {
                                 />
                                 {props.errors.username && props.touched.username && <Text style={[styles.errorLabel]}>{props.errors.username}</Text>}
                             </View>
-                            <View style={{ width: 300 }}>
+                            <View style={styles.textInput}>
                                 <TextInput
                                     placeholder={'Password'}
                                     secureTextEntry
@@ -134,7 +132,7 @@ export default class Login extends Component {
 
 
                             <Button success buttonStyle={styles.buttonSubmit} onPress={props.handleSubmit}>
-                              <Text style={[styles.textBasic, {alignSelf: 'center', color: 'white'}]}>Login</Text>
+                              <Text style={[styles.textBasic, {alignSelf: 'center', color: 'white', marginBottom: 20}]}>Login</Text>
                             </Button>
                             <TouchableOpacity onPress={this.goToRegisterPage}>
                                 <Text style={styles.textBasic}>Tap here to Register</Text>
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
         // backgroundColor: '#dc1f1b',
         width: 300,
         height: 60,
-        borderRadius: 10,
+        borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -209,5 +207,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'left',
         color: '#dc1f1b',
+    },
+    image: {
+      height: 150,
+    },
+    textInput: {
+      width: 300,
+      borderWidth: 0.75,
+      borderRadius: 5,
+      marginBottom: 15,
+      paddingHorizontal: 5
     }
 });
